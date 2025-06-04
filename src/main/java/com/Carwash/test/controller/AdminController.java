@@ -55,7 +55,7 @@ public class AdminController {
     private ServicePriceRepository servicePriceRepository;
     
     // Admin credentials (in production, these should be in a secure configuration)
-    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_USERNAME = "admin"; //Change this to whatever you want along with the password.
     private static final String ADMIN_PASSWORD = "admin123"; // In production, use hashed password
     
     @GetMapping("/login")
