@@ -1,0 +1,125 @@
+/* Admin Layout */
+.admin-container {
+    padding: 20px;
+    margin-bottom: 60px; /* Footer height */
+}
+
+/* Admin Navigation */
+.admin-nav {
+    background: #34495e;
+    padding: 1rem;
+    position: sticky;
+    top: 56px; /* Below fixed navbar */
+    z-index: 1020;
+}
+
+.admin-nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 1rem;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease;
+}
+
+.admin-nav a:hover {
+    background: #2c3e50;
+    border-radius: 4px;
+}
+
+/* Content Area */
+.content-wrapper {
+    padding: 1.5rem 0;
+}
+
+/* Stats Cards */
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-icon.blue { background: #3498db; }
+.stat-icon.green { background: #2ecc71; }
+.stat-icon.orange { background: #f39c12; }
+.stat-icon.red { background: #e74c3c; }
+
+.stat-info h3 {
+    font-size: 0.875rem;
+    color: #666;
+    margin: 0;
+}
+
+.stat-info .number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 0;
+}
+
+/* Charts */
+.chart-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-card h3 {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+/* Charts container */
+.chart-container {
+    position: relative;
+    height: 250px; /* Reduced height */
+    margin-bottom: 20px;
+}
+
+/* Recent Bookings Table */
+.recent-bookings .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.recent-bookings .card-header {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.recent-bookings h3 {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.recent-bookings .table {
+    margin: 0;
+}
+
+.recent-bookings .table th {
+    font-weight: 600;
+    color: #2c3e50;
+} 

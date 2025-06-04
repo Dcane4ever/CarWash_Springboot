@@ -1,0 +1,22 @@
+/* Import variables */
+@import '../utils/variables.css';
+
+/* Footer Styles */
+footer {
+    background: #1a1a1a;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    height: 60px;
+    width: 100%;
+    position: relative;
+    margin-top: auto;
+}
+
+/* Responsive Footer */
+@media (max-width: 768px) {
+    footer {
+        position: relative;
+        padding: calc(var(--spacing-small) / 2);
+    }
+} 

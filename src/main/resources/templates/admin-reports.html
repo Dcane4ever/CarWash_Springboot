@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Reports Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/admin/logout}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="content-wrapper">
+            <div class="admin-nav">
+                <a th:href="@{/admin/dashboard}">Dashboard</a>
+                <a th:href="@{/admin/customers}">Manage Customers</a>
+                <a th:href="@{/admin/bookings}">Manage Bookings</a>
+                <a th:href="@{/admin/reports}">Reports</a>
+                <a th:href="@{/admin/prices}">Manage Prices</a>
+            </div>
+
+            <div class="container py-4">
+                <!-- Date Range Filter -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form id="reportDateForm" class="row g-3 align-items-end" method="GET" th:action="@{/admin/reports}">
+                            <div class="col-md-4">
+                                <label class="form-label">Select Date</label>
+                                <input type="text" 
+                                       id="reportDateRange" 
+                                       class="form-control" 
+                                       placeholder="Select date">
+                                <!-- Add hidden input for the actual date value -->
+                                <input type="hidden" 
+                                       id="startDate" 
+                                       name="startDate" 
+                                       th:value="${report.startDate}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Report Type</label>
+                                <select name="reportType" class="form-control">
+                                    <option value="daily" th:selected="${reportType == 'daily'}">Daily</option>
+                                    <option value="weekly" th:selected="${reportType == 'weekly'}">Weekly</option>
+                                    <option value="monthly" th:selected="${reportType == 'monthly'}">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Wash Package</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="washPackage" value="basic"
+                                           th:checked="${#lists.contains(param.washPackageList ?: {}, 'basic')}" id="basicCheck">
+                                    <label class="form-check-label" for="basicCheck">Basic</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="washPackage" value="premium"
+                                           th:checked="${#lists.contains(param.washPackageList ?: {}, 'premium')}" id="premiumCheck">
+                                    <label class="form-check-label" for="premiumCheck">Premium</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="washPackage" value="express"
+                                           th:checked="${#lists.contains(param.washPackageList ?: {}, 'express')}" id="expressCheck">
+                                    <label class="form-check-label" for="expressCheck">Express</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">Generate Report</button>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" id="downloadCsvButton" class="btn btn-success w-100">Download CSV</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Revenue Stats -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Revenue</h5>
+                                <h2 class="card-text">₱<span th:text="${#numbers.formatDecimal(report.totalRevenue, 0, 'COMMA', 0, 'POINT')}">0.00</span></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Bookings</h5>
+                                <h2 class="card-text"><span th:text="${report.totalBookings}">0</span></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Unpaid Bookings</h5>
+                                <h2 class="card-text"><span th:text="${report.unpaidBookings}">0</span></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Report Table -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Detailed Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Plate Number</th>
+                                        <th>Wash Package</th>
+                                        <th>Revenue</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="booking : ${flatBookings}">
+                                        <td th:text="${#temporals.format(T(java.time.LocalDate).parse(booking.appointmentDate), 'dd-MM-yyyy')}"></td>
+                                        <td th:text="${booking.plateNumber}"></td>
+                                        <td th:text="${booking.washPackage}"></td>
+                                        <td th:text="|₱${#numbers.formatDecimal(priceMap[booking.washPackage], 0, 'COMMA', 0, 'POINT')}|"></td>
+                                        <td>
+                                            <span th:class="${'badge ' + 
+                                                (booking.status == 'PENDING' ? 'bg-warning' : 
+                                                (booking.status == 'CONFIRMED' ? 'bg-primary' : 
+                                                (booking.status == 'COMPLETED' ? 'bg-success' : 'bg-danger')))}"
+                                                th:text="${booking.status}"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="row g-4 mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Revenue Trend</h5>
+                                <div style="height: 300px;">
+                                    <canvas id="revenueTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Service Distribution</h5>
+                                <div style="height: 300px;">
+                                    <canvas id="serviceChart" th:data-services="${report.serviceDistribution}"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Car Wash Service. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        const revenueTrendData = /*[[${report.dailyRevenue}]]*/ {};
+        const serviceDistribution = /*[[${report.serviceDistribution}]]*/ {};
+        const reportStartDate = /*[[${startDate}]]*/ null; 
+        const reportType = /*[[${reportType}]]*/ 'daily';
+        var contextPath = /*[[@{/}]]*/ '';
+    </script>
+    <script th:src="@{/js/admin-reports.js}"></script>
+</body>
+</html>

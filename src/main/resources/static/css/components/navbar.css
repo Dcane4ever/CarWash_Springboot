@@ -1,0 +1,112 @@
+/* Import variables */
+@import '../utils/variables.css';
+
+/* Base Layout */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #1a1a1a;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+}
+
+.navbar-brand {
+    color: #fff !important;
+    font-weight: 700;
+}
+
+.navbar-nav {
+    margin-left: auto;
+}
+
+.nav-link {
+    color: #fff !important;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+/* Main Container */
+.main-container {
+    flex: 1;
+    margin-top: 56px; /* Height of navbar */
+    overflow-y: auto;
+    position: relative;
+    min-height: calc(100vh - 116px); /* viewport height - (navbar + footer) */
+}
+
+.content-wrapper {
+    padding-bottom: 60px; /* Height of footer */
+}
+
+/* Footer Styles */
+footer {
+    background: #1a1a1a;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* Top Navigation */
+.top-bar {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-controls {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.logout-link {
+    color: white;
+    text-decoration: none;
+}
+
+.phone {
+    color: white;
+}
+
+/* Admin Navigation */
+.admin-nav {
+    background: #34495e;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+.admin-nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 1rem;
+    padding: 5px 10px;
+}
+
+.admin-nav a:hover {
+    background: #2c3e50;
+    border-radius: 4px;
+} 

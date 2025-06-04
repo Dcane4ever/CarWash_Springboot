@@ -1,0 +1,15 @@
+/* Import all CSS modules */
+@import 'utils/variables.css';
+@import 'components/layout.css';
+@import 'components/navbar.css';
+@import 'components/footer.css';
+@import 'components/common.css';
+@import 'pages/welcome.css';
+@import 'pages/login.css';
+@import 'pages/dashboard.css';
+@import 'pages/services.css';
+@import 'pages/booking.css';
+@import 'pages/admin.css';
+@import 'pages/register.css';
+
+/* Any remaining global styles can go here */

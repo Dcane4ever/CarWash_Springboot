@@ -1,0 +1,85 @@
+/* Register Page Styles */
+.error-message {
+    color: red;
+    margin: 10px 0;
+}
+
+.success-message {
+    color: green;
+    margin: 10px 0;
+}
+
+.page-transition {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.page-transition.fade-out {
+    opacity: 0;
+}
+
+:root {
+    --secondary-color: #151226;
+    --contrast-color: #BF307F;
+}
+
+body {
+    background-color: var(--secondary-color);
+    animation: fadeIn .8s ease forwards;
+}
+
+.main-container {
+    animation: expand .8s ease forwards;
+}
+
+.login-form-container {
+    animation: slideUp .8s ease-in-out forwards;
+}
+
+.login-form button[type="submit"] {
+    position: relative;
+    overflow: hidden;
+    transform: translateY(30px);
+    animation: slideUp .8s ease-in-out forwards 0.5s;
+}
+
+.login-form input:focus {
+    border-color: var(--contrast-color);
+    box-shadow: 0 0 0 0.2rem rgba(191, 48, 127, 0.25);
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0px);
+        opacity: 1;
+    }
+}
+
+@keyframes expand {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.nav-link:hover {
+    color: var(--contrast-color) !important;
+    transition: color 0.3s ease;
+} 

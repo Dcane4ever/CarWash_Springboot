@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Reports Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/admin/logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="content-wrapper">
+            <div class="admin-nav">
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/customers">Manage Customers</a>
+                <a href="/admin/bookings">Manage Bookings</a>
+                <a href="/admin/reports">Reports</a>
+                <a href="/admin/prices">Manage Prices</a>
+            </div>
+
+            <div class="container py-4">
+                <!-- Date Range Filter -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form id="reportDateForm" class="row g-3 align-items-end" method="GET" action="/admin/reports">
+                            <div class="col-md-4">
+                                <label class="form-label">Select Date</label>
+                                <input type="text" 
+                                       id="reportDateRange" 
+                                       class="form-control" 
+                                       placeholder="Select date">
+                                <!-- Add hidden input for the actual date value -->
+                                <input type="hidden" 
+                                       id="startDate" 
+                                       name="startDate" 
+                                       th:value="${report.startDate}">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Report Type</label>
+                                <select name="reportType" class="form-control">
+                                    <option value="daily" th:selected="${reportType == 'daily'}">Daily</option>
+                                    <option value="weekly" th:selected="${reportType == 'weekly'}">Weekly</option>
+                                    <option value="monthly" th:selected="${reportType == 'monthly'}">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">Generate Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Revenue Stats -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Revenue</h5>
+                                <h2 class="card-text">₱<span th:text="${#numbers.formatDecimal(report.totalRevenue, 0, 'COMMA', 0, 'POINT')}">0.00</span></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Bookings</h5>
+                                <h2 class="card-text"><span th:text="${report.totalBookings}">0</span></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Unpaid Bookings</h5>
+                                <h2 class="card-text"><span th:text="${report.unpaidBookings}">0</span></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Report Table -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Detailed Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Service Type</th>
+                                        <th>Number of Bookings</th>
+                                        <th>Revenue</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="entry : ${report.dailyRevenue}">
+                                        <td th:text="${entry.key}"></td>
+                                        <td>
+                                            <!-- Group bookings by service type for this date -->
+                                            <span th:each="service : ${report.serviceDistribution}" 
+                                                  th:text="${service.key + ': ' + service.value}"
+                                                  class="d-block"></span>
+                                        </td>
+                                        <td th:text="${report.totalBookings}"></td>
+                                        <td>₱<span th:text="${#numbers.formatDecimal(entry.value, 0, 'COMMA', 0, 'POINT')}"></span></td>
+                                        <td>
+                                            <!-- Show status distribution -->
+                                            <span th:each="status : ${report.statusDistribution}"
+                                                  th:class="${'badge ' + 
+                                                    (status.key == 'PENDING' ? 'bg-warning' : 
+                                                    (status.key == 'CONFIRMED' ? 'bg-primary' : 
+                                                    (status.key == 'COMPLETED' ? 'bg-success' : 'bg-danger')))}"
+                                                  th:text="${status.key + ': ' + status.value}"
+                                                  class="d-block mb-1"></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add the charts section back after the Revenue Stats cards -->
+                <div class="row g-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Revenue Trend</h5>
+                                <div style="height: 300px;">
+                                    <canvas id="revenueChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Car Wash Service. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize flatpickr for date selection
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#reportDateRange", {
+                dateFormat: "Y-m-d",
+                defaultDate: document.getElementById('startDate').value,
+                onChange: function(selectedDates, dateStr) {
+                    document.getElementById('startDate').value = dateStr;
+                }
+            });
+            
+            // Sample data for Revenue Trend chart
+            const sampleDates = ['2025-05-01', '2025-05-05', '2025-05-10', '2025-05-15', '2025-05-20', '2025-05-25', '2025-05-30'];
+            const sampleRevenues = [500, 800, 600, 900, 700, 850, 750];
+            
+            // Initialize Revenue Trend chart
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sampleDates,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: sampleRevenues,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₱' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return '₱' + context.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
